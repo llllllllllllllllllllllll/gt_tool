@@ -1,0 +1,7 @@
+cache/*
+routers/commentsRouter_*.go
+
+#exec
+gt_tool
+#tmp
+*.tmp
