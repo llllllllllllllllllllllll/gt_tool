@@ -1,19 +1,14 @@
 package controllers
 
-import (
-	// "sort"
-)
-
-
+// "sort"
 
 type gt struct {
-	Data map[string]report
-	GLogDetail []gLogDetail
-	GLogIndex map[int]gLogDetail
-	GLogUser map[string]uLog
+	Data        map[string]report
+	GLogDetail  []gLogDetail
+	GLogIndex   map[int]gLogDetail
+	GLogUser    map[string]uLog
 	LastLogTime int
 }
-
 
 // func (r *gt) Calc() {
 // 	if r.ChuDao == nil {
@@ -62,18 +57,18 @@ type damage_list struct {
 	LogTime  int     `json:"log_time,omitempty"`
 	IsKill   int     `json:"is_kill,omitempty"`
 	Record   *record `json:"-"`
-	UserID      int           `json:"user_id,omitempty"`
-	UserName    string        `json:"user_name,omitempty"`
+	UserID   int     `json:"user_id,omitempty"`
+	UserName string  `json:"user_name,omitempty"`
 }
 
 type gLog struct {
-	Code int `json:"code"`
+	Code int          `json:"code"`
 	Data []gLogDetail `json:"data"`
 }
 
 type gLogDetail struct {
 	LogTime  int        `json:"log_time,omitempty"`
-	LogDate string  `json:"log_date,omitempty"`
+	LogDate  string     `json:"log_date,omitempty"`
 	UserName string     `json:"user_name,omitempty"`
 	Damage   int        `json:"damage,omitempty"`
 	Boss     gLogBoss   `json:"boss,omitempty"`
@@ -89,7 +84,7 @@ type gLogRole struct {
 
 type gLogBoss struct {
 	Name            string `json:"name,omitempty"`
-	Level           int `json:"level,omitempty"`
+	Level           int    `json:"level,omitempty"`
 	ElementalTypeCn string `json:"elemental_type_cn,omitempty"`
 }
 
@@ -131,7 +126,6 @@ type gLogBoss struct {
 //     ]
 // }
 
-
 type filter struct {
 	Code int        `json:"code,omitempty"`
 	Data filterData `json:"data,omitempty"`
@@ -159,17 +153,22 @@ type filterMember struct {
 // member: [{id: 1001217502, name: "啊咧"}, {id: 1000961690, name: "雾里望白莲"}, {id: 1001425067, name: "御风洛溪"},…]
 // 0: {id: 1001217502, name: "啊咧"}
 
-
 type uLog struct {
 	ChuDao map[string]int `json:"chu_dao,omitempty"`
 	Data   []gLogDetail   `json:"data,omitempty"`
 	Stat   uStat          `json:"stat,omitempty"`
 }
 
-// uStat 统计信息，每日出刀数，每日伤害
+// uStat 统计信息
 type uStat struct {
+	// ChuDao 每日出刀数
 	ChuDao      map[string]int `json:"chu_dao"`
 	ChuDaoTotal int            `json:"chu_dao_total"`
+	// DaoDmg 每日伤害
 	DaoDmg      map[string]int `json:"dao_dmg"`
 	DaoDmgTotal int            `json:"dao_dmg_total"`
+	// ChuBoss 每个boss打了几次
+	ChuBoss map[string]int `json:"chu_boss"`
+	// ChuBoss 每个boss总共打了多少
+	ChuBossDmg map[string]int `json:"chu_boss_dmg"`
 }

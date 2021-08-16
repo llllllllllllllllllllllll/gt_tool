@@ -3,7 +3,7 @@
 <html>
 
 <head>
-  <title>坎公骑冠剑7月第五期會戰</title>
+  <title>守望者传说</title>
   <meta name="referrer" content="no-referrer" />
   <link rel="stylesheet" href="/static/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/fontawesome/all.css">
@@ -48,11 +48,32 @@
 <body class="sidebar-mini sidebar-closed sidebar-collapse"
   style="height: auto; min-height: 100%; font:14px Helvetica Neue,Helvetica,PingFang SC,Tahoma,Arial,sans-serif;">
   <div class="wrapper" style="height: auto; min-height: 100%;">
+    <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
+      <div class="container">
+
+  
+        <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+          <!-- Left navbar links -->
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">选择数据</a>
+              <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow" style="left: 0px; right: inherit;">
+                <li><a href="#" class="dropdown-item" data-s="6">第6期</a></li>
+                <li><a href="#" class="dropdown-item" data-s="5">第5期</a></li>
+
+              </ul>
+            </li>
+          </ul>
+
+        </div>
+  
+      </div>
+    </nav>
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h4 class="box-title">本日出刀数量 <span id="dao_curr"></span> / 90 还剩 <span id="dao_left"></span> 刀</h4>
+            <h4 class="box-title">第{{.sN}}期 本日出刀数量 <span id="dao_curr"></span> / 90 还剩 <span id="dao_left"></span> 刀</h4>
           </div>
           <div class="col-sm-6">
             <hj>
@@ -79,20 +100,22 @@
               </div>
               <div class="card-body">
                 <div class="row">
+                  <div class="col-md-3 col-sm-6 col-12"><span id="boss_status"></span></div>
+
+                </div>
+                <div class="row">
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box" id="boss_1">
                       <!-- <span class="info-box-icon"><i class="far fa-bookmark"></i></span> -->
-        
+
                       <div class="info-box-content">
                         <span class="info-box-text" id="boss_name_1"></span>
                         <span class="info-box-number" id="boss_hp_1"></span>
-        
+
                         <div class="progress">
                           <div class="progress-bar" id="boss_pct_1" style="width: 100%"></div>
                         </div>
-                        <!-- <span class="progress-description">
-                          70% Increase in 30 Days
-                        </span> -->
+                        <!-- <span class="progress-description" id="boss_attr_1"></span> -->
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -102,17 +125,15 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box" id="boss_2">
                       <!-- <span class="info-box-icon"><i class="far fa-thumbs-up"></i></span> -->
-        
+
                       <div class="info-box-content">
                         <span class="info-box-text" id="boss_name_2"></span>
                         <span class="info-box-number" id="boss_hp_2"></span>
-        
+
                         <div class="progress">
                           <div class="progress-bar" id="boss_pct_2" style="width: 100%"></div>
                         </div>
-                        <!-- <span class="progress-description">
-                          70% Increase in 30 Days
-                        </span> -->
+                        <!-- <span class="progress-description" id="boss_attr_2"></span> -->
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -122,17 +143,15 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box" id="boss_3">
                       <!-- <span class="info-box-icon"><i class="far fa-calendar-alt"></i></span> -->
-        
+
                       <div class="info-box-content">
                         <span class="info-box-text" id="boss_name_3"></span>
                         <span class="info-box-number" id="boss_hp_3">0</span>
-        
+
                         <div class="progress">
                           <div class="progress-bar" id="boss_pct_3" style="width: 100%"></div>
                         </div>
-                        <!-- <span class="progress-description">
-                          70% Increase in 30 Days
-                        </span> -->
+                        <!-- <span class="progress-description" id="boss_attr_3"></span> -->
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -142,17 +161,15 @@
                   <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box" id="boss_4">
                       <!-- <span class="info-box-icon"><i class="fas fa-comments"></i></span> -->
-        
+
                       <div class="info-box-content">
                         <span class="info-box-text" id="boss_name_4"></span>
                         <span class="info-box-number" id="boss_hp_4">0</span>
-        
+
                         <div class="progress">
                           <div class="progress-bar" id="boss_pct_4" style="width: 100%"></div>
                         </div>
-                        <!-- <span class="progress-description">
-                          70% Increase in 30 Days
-                        </span> -->
+                        <span class="progress-description" id="boss_attr_4"></span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -196,6 +213,10 @@
                       aria-controls="vert-tabs-total-guild" aria-selected="false">每日伤害（公会）</a>
                   </li>
                   <li class="nav-item">
+                    <a class="nav-link" id="vert-tabs-chart" data-toggle="pill" href="#chart" role="tab"
+                      aria-controls="vert-tabs-chart" aria-selected="false">图表分析</a>
+                  </li>
+                  <li class="nav-item">
                     <a class="nav-link" id="vert-tabs-tansuo-tab" data-toggle="pill" href="#tansuo" role="tab"
                       aria-controls="vert-tabs-tansuo" aria-selected="false">探索工坊</a>
                   </li>
@@ -224,10 +245,56 @@
                       aria-labelledby="vert-tabs-total-guild-tab">
                       <table id="tbl_total_guild"></table>
                     </div>
+                    <div class="tab-pane fade" id="chart" role="tabpanel" aria-labelledby="vert-tabs-chart">
+                      <div class="row">
+                        选择成员：<select id="sel_stat_users" class="text-md"></select>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-6 col-12">
+                          <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title">不同 boss 出刀数</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                              <div id="chart_boss_dao" style="width: 300px;height:400px;"></div>
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                        </div>
+                        <div class="col-sm-6 col-12">
+                          <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title">不同 boss 平均刀伤</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                              <div id="chart_boss_avg_damage" style="width: 300px;height:400px;"></div>
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-12 col-24">
+                          <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title">输出</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                              <div id="chart_daily_dmg" style="width: 1000px;height:400px;"></div>
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
                     <div class="tab-pane fade" id="tansuo" role="tabpanel" aria-labelledby="vert-tabs-tansuo-tab">
                       <div>
                         <span>设计图</span>
-                        <img src="/static/img/gt/tansuo_shejitu_chanchu.jpg" />
+                        <img class="img-fluid mb-2" src="/static/img/gt/tansuo_shejitu_chanchu.jpg" />
                       </div>
                     </div>
                   </div>
@@ -252,16 +319,14 @@
   <script src="/static/js/extensions/bootstrap-table-filter-control.min.js"></script>
   <script src="/static/js/extensions/multiple-select.min.js"></script>
   <script>
-    boss = ["熔岩史莱姆国王", "流沙怪", "妖精", "雪人将军盖斯特"];
-    users = ["Doge", "Draketony", "风中的残痕", "老王", "夏姆", "egpk", "简娜", "暮鼓", "三笠阿克曼", "ROMANTIC", "Tarxeyfphe", "期待地搓手手", "御风洛溪", "slmint", "ZBY", "scuzjc", "雾里望白莲", "沈戴培", "OrYs", "淦饭王", "女施主借个吻", "losttime", "pixel", "谏山澪", "zzl", "啊咧", "大可大可", "七天限定", "看见妹子脸会红", "ypk25"];
-    boss_color = {
-      "熔岩史莱姆国王": "vtd-green",
-      "流沙怪": "vtd-purple",
-      "妖精": "vtd-pink",
-      "雪人将军盖斯特": "vtd-azure",
-    };
+    $(document).ready(function(){
+      $('#dropdownSubMenu1').next(".dropdown-menu").find("a").on("click",function(e){
+        let url = new URL(location.href);
+        url.searchParams.set("s", $(this).data("s"));
+        location.href = url;
+      });
+    });
 
-    $("#lastUpdate").html(new Date($("#lastUpdate").html() * 1000 + 8 * 3600 * 1000).toISOString().slice(0, 19).replace("T", " "));
 
     filterDate = {{.Date }};
     _date = {};
@@ -269,6 +334,144 @@
     sp_log = {};
     // 每日伤害（公会）
     tongji_gh = {};
+    // boss = ["熔岩史莱姆国王", "流沙怪", "妖精", "雪人将军盖斯特"];
+    users = ["Doge", "Draketony", "风中的残痕", "老王", "夏姆", "egpk", "简娜", "暮鼓", "三笠阿克曼", "ROMANTIC", "Tarxeyfphe", "期待地搓手手", "御风洛溪", "slmint", "ZBY", "scuzjc", "雾里望白莲", "沈戴培", "OrYs", "淦饭王", "女施主借个吻", "losttime", "pixel", "谏山澪", "zzl", "啊咧", "大可大可", "七天限定", "看见妹子脸会红", "ypk25"];
+    users.push("稀饭鱼子酱");
+    // boss[name]
+    //   .dao             被刀数
+    //   .total_damage    总承受伤害
+    //   .avg_damage      平均每刀伤害
+    //   .elem            属性
+    //   .class           样式class
+    //   .color           颜色
+    boss = {
+      "熔岩史莱姆国王": {
+        class: "vtd-green", color: "#ACDB7E",
+        elem: "",
+        dao: 0,
+        total_damage: 0,
+        avg_damage: 0,
+      },
+      "流沙怪": {
+        class: "vtd-purple", color: "#8b7be8",
+        elem: "",
+        dao: 0,
+        total_damage: 0,
+        avg_damage: 0,
+      },
+      "妖精": {
+        class: "vtd-pink", color: "#e99899",
+        elem: "",
+        dao: 0,
+        total_damage: 0,
+        avg_damage: 0,
+      },
+      "雪人将军盖斯特": {
+        class: "vtd-azure", color: "#85D4E6",
+        elem: "",
+        dao: 0,
+        total_damage: 0,
+        avg_damage: 0,
+      },
+    }
+    boss_name = [];
+    for (const key of Object.keys(boss)) {
+      boss_name.push(key);
+    }
+    $('#sel_stat_users').append(new Option("公会", "guild"));
+    users.forEach(function (u) {
+      $('#sel_stat_users').append(new Option(u, u));
+    });
+
+
+    chart_boss_dao_options = {
+      title: {
+        text: '',
+        subtext: '',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'item'
+      },
+      series: [
+        {
+          name: '有效刀数',
+          type: 'pie',
+          radius: '50%',
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          },
+          // roseType: 'area',
+          label: {
+            formatter: '{b}：{c}  {d}%  ',
+          },
+        }
+      ]
+    };
+    chart_boss_avg_damage_options = {
+      title: {
+        text: '',
+        subtext: '',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'item'
+      },
+      series: [
+        {
+          name: '平均每刀受到的伤害',
+          type: 'pie',
+          radius: '50%',
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          },
+          // roseType: 'area',
+          label: {
+            formatter: '{b}：{c}  {d}%  ',
+          },
+        }
+      ]
+    };
+    chart_daily_dmg_options = {
+      tooltip: {
+        trigger: 'axis'
+      },
+      xAxis: [
+        {
+          type: 'category',
+          data: filterDate,
+          axisPointer: {
+            type: 'shadow'
+          }
+        }
+      ],
+      yAxis: [
+        {
+          type: 'value',
+          name: '输出',
+          // min: 0,
+          // max: 8000000,
+        }
+      ],
+      series: [
+        {
+          name: '造成伤害',
+          type: 'bar',
+        }
+      ]
+    };
+
+    $("#lastUpdate").html(new Date($("#lastUpdate").html() * 1000 + 8 * 3600 * 1000).toISOString().slice(0, 19).replace("T", " "));
+
+
 
     filterDate.forEach(function (v) {
       _date[v] = { "timestamp": new Date(v).valueOf(), "str": v };
@@ -277,6 +480,7 @@
     });
     today = _date[filterDate[0]];
     $("#sel_sp").val(filterDate[0]);
+    $("#sel_sp").change();
 
     round2Lv = {
       "1": { "lv": "50", "hp": 1080000 },
@@ -351,6 +555,7 @@
 
 
     $('#table').bootstrapTable({
+      buttonsClass: "primary",
       locale: "zh-CN",
       data: mt,
       // onLoadSuccess: function(data) {
@@ -434,7 +639,8 @@
         title: '首领名称',
         sortable: true,
         filterControl: "select",
-        filterData: "var:boss",
+        // filterData: "var:boss",
+        filterData: "var:boss_name",
       }, {
         field: 'boss.level',
         title: '首领等级',
@@ -536,10 +742,31 @@
 
       });
       sp_log[day].forEach(function (row) {
+        // 自动处理新加入的公会成员
+        if (!data.hasOwnProperty(row.user_name)) {
+          data[row.user_name] = {
+            "index": data.length + 1,
+            "user_name": row.user_name,
+            "damage": 0,
+            "damage_list": [],
+            "hit": 0,
+            "hit1_color": "",
+            "hit2_color": "",
+            "hit3_color": "",
+            "hit1": "",
+            "hit2": "",
+            "hit3": "",
+          }
+        }
         if (!row.hasOwnProperty('damage')) {
           data[row.user_name].damage += 0;
         } else {
-          data[row.user_name].damage += row.damage;
+          try {
+            data[row.user_name].damage += row.damage;
+          } catch (e) {
+            console.error(e);
+          }
+
         }
 
         data[row.user_name].damage_list.push(row);
@@ -555,17 +782,17 @@
         if (data[row].damage_list.length >= 1) {
           data[row].hit = 1;
           data[row].hit1 = data[row].damage_list[0].boss.name;
-          data[row].hit1_color = boss_color[data[row].damage_list[0].boss.name];
+          data[row].hit1_color = boss[data[row].damage_list[0].boss.name].class;
         }
         if (data[row].damage_list.length >= 2) {
           data[row].hit = 2;
           data[row].hit2 = data[row].damage_list[1].boss.name;
-          data[row].hit2_color = boss_color[data[row].damage_list[1].boss.name];
+          data[row].hit2_color = boss[data[row].damage_list[1].boss.name].class;
         }
         if (data[row].damage_list.length == 3) {
           data[row].hit = 3;
           data[row].hit3 = data[row].damage_list[2].boss.name;
-          data[row].hit3_color = boss_color[data[row].damage_list[2].boss.name];
+          data[row].hit3_color = boss[data[row].damage_list[2].boss.name].class;
         }
       });
 
@@ -573,6 +800,7 @@
 
       return data
     }
+
 
 
 
@@ -641,21 +869,21 @@
           title: '',
           formatter: function () { return "" },
           cellStyle: function (value, row, index, field) {
-            return { classes: value , css: { width : "40px"} }
+            return { classes: value, css: { width: "40px" } }
           }
         }, {
           field: 'hit2_color',
           title: '',
           formatter: function () { return "" },
           cellStyle: function (value, row, index, field) {
-            return { classes: value , css: { width : "40px"}}
+            return { classes: value, css: { width: "40px" } }
           }
         }, {
           field: 'hit3_color',
           title: '',
           formatter: function () { return "" },
           cellStyle: function (value, row, index, field) {
-            return { classes: value, css: { width : "40px"} }
+            return { classes: value, css: { width: "40px" } }
           }
         }, {
           field: 'hit1',
@@ -698,6 +926,8 @@
           b.boss.hp = gLog[b.log_time].boss.hp = round2Lv[round].boss[b.boss.name] = 0;
         }
 
+        boss[b.boss.name].elem = b.boss.elemental_type_cn;
+
         roundhp = function () { let hp = 0; Object.values(round2Lv[round].boss).forEach(function (v) { hp += v }); return hp }();
         // if (round == 13 ) {
         //   console.log(b.boss.name + " "+ b.log_time);
@@ -716,7 +946,7 @@
             "avg20": 0,
             "dao_dmg": [],
           }
-          boss.forEach(function (b) {
+          Object.keys(boss).forEach(function (b) {
             tongji_gh[log_date][b] = { "dao": 0, "dmg": 0 };
           });
         }
@@ -733,23 +963,116 @@
         if (roundhp == 0) {
           round++;
         }
+
+        // 不同boss刀数图表 总承受伤害 平均刀伤
+        boss[b.boss.name].dao++;
+        boss[b.boss.name].total_damage += b.damage;
       });
+
+      $("#sel_stat_users").change(function () {
+        let who = $(this).val();
+        chart_boss_dao_options.series[0].data = [];
+        chart_boss_avg_damage_options.series[0].data = [];
+        if (who == "guild") {
+          for (const [key, value] of Object.entries(boss)) {
+            chart_boss_dao_options.series[0].data.push({ "value": value.dao, "name": key, itemStyle: { color: boss[key].color } });
+            chart_boss_avg_damage_options.series[0].data.push({
+              "value": (value.total_damage / value.dao).toFixed(0), "name": key, itemStyle: { color: boss[key].color }
+            })
+          }
+          chart_daily_dmg_options.series[0].data = Object.values(tongji_gh).map(a => a.total);
+        } else {
+          if (uLog.hasOwnProperty(who)) {
+            for (const [key, value] of Object.entries(uLog[who].stat.chu_boss)) {
+              chart_boss_dao_options.series[0].data.push({ "value": value, "name": key, itemStyle: { color: boss[key].color } });
+            }
+            for (const [key, value] of Object.entries(uLog[who].stat.chu_boss_dmg)) {
+              chart_boss_avg_damage_options.series[0].data.push({
+                "value": (value / uLog[who].stat.chu_boss[key]).toFixed(0), "name": key, itemStyle: { color: boss[key].color }
+              });
+            }
+            chart_daily_dmg_options.series[0].data = Object.values(uLog[who].stat.dao_dmg).splice(0,filterDate.length);
+          }
+        }
+        document.getElementById('chart_boss_dao').style.width = 50 + "vw";
+        document.getElementById('chart_boss_dao').style.height = 50 + "vh";
+        chart_boss_dao = echarts.init(document.getElementById('chart_boss_dao'));
+        chart_boss_dao.setOption(chart_boss_dao_options);
+        chart_boss_dao.resize({
+          opts: { width: "auto", height: "auto" }
+        });
+
+        document.getElementById('chart_boss_avg_damage').style.width = 50 + "vw";
+        document.getElementById('chart_boss_avg_damage').style.height = 50 + "vh";
+        chart_boss_avg_damage = echarts.init(document.getElementById('chart_boss_avg_damage'));
+        chart_boss_avg_damage.setOption(chart_boss_avg_damage_options);
+        chart_boss_avg_damage.resize({
+          opts: { width: "auto", height: "auto" }
+        });
+
+        
+
+        document.getElementById('chart_daily_dmg').style.width = 100 + "vw";
+        document.getElementById('chart_daily_dmg').style.height = 50 + "vh";
+        chart_daily_dmg = echarts.init(document.getElementById('chart_daily_dmg'));
+        chart_daily_dmg.setOption(chart_daily_dmg_options,true);
+        chart_daily_dmg.resize({
+          opts: { width: "auto", height: "auto" }
+        });
+      });
+
+
+      $("#sel_stat_users").val("guild");
+      $("#sel_stat_users").change();
+
+
+      window.addEventListener("resize", () => {
+        this.chart_boss_dao.resize({
+          opts: { width: "auto", height: "auto" }
+        });
+        this.chart_boss_avg_damage.resize({
+          opts: { width: "auto", height: "auto" }
+        });
+      });
+
+
+
+
+
 
       Object.values(tongji_gh).forEach(function (v) {
         v.avg = (v.total / v.dao_count).toFixed(0);
+        // 计算平均值与截尾均值 截尾均值 系数20%
+        let num = (v.dao_dmg.length * 0.2).toFixed(2);
+        num = num.substr(0, num.length - 3);
+        let lastStr = num.charAt(num.length - 3);
+        if (lastStr % 2 != 0) {
+          num = (num - 0.1).toFixed(0);
+        }
+        let dao_dmg = v.dao_dmg.concat();
+        dao_dmg.sort();
+        num = num / 2;
+        dao_dmg = dao_dmg.slice(num, dao_dmg.length - num);
+        let _avg20_total = 0;
+        dao_dmg.forEach(function (v) { _avg20_total += v });
+        v.avg20 = (_avg20_total / dao_dmg.length).toFixed(0);
+
       });
 
-      boss.forEach(function(v,i){
-        $("#boss_name_"+(i+1)).text(v);
-        $("#boss_hp_"+(i+1)).text( parseInt(round2Lv[round].boss[v]).toLocaleString() );
+
+      Object.keys(boss).forEach(function (v, i) {
+        $("#boss_name_" + (i + 1)).text(v + "(" + boss[v].elem + ")");
+        $("#boss_hp_" + (i + 1)).text(parseInt(round2Lv[round].boss[v]).toLocaleString());
         pct = ((round2Lv[round].boss[v] / round2Lv[round].hp) * 100).toFixed(0);
-        $("#boss_pct_"+(i+1)).css({wdith: pct+"%"});
-        $("#boss_"+(i+1)).addClass(boss_color[v]);
+        $("#boss_pct_" + (i + 1)).css("width", pct + "%");
+        $("#boss_" + (i + 1)).addClass(boss[v].class);
       });
 
-
+      $("#boss_status").text("当前 " + round + " 周目，首领等级 " + round2Lv[round].lv);
 
     }
+
+
 
     uLog = [];
     chudao = [];
@@ -835,11 +1158,20 @@
       }
     }, {
       field: 'avg20',
-      title: '平均伤害（20%）',
+      title: '截尾均值（20%）<small><i class="fas fa-question-circle"></i></small>',
+      titleTooltip: "由于均数较易受极端值的影响，因此可以考虑将数据进行行排序后，按照一定比例去掉最两端的数据，只使用中部的数据来求均数。如果截尾均数和原均数相差不大，则说明数据不存在极端值，或者两侧极端值的影响正好抵消；反之，则说明数据中有极端值，此时截尾平均数能更好地反映数据的集中趋势",
       sortable: true,
+      formatter: function (value, row, index, field) {
+        return parseInt(value).toLocaleString();
+      },
+      sorter: function (a, b, rowA, rowB) {
+        let aa = a.replace(",", "");
+        let bb = b.replace(",", "");
+        return aa - bb;
+      }
     }]
     // 每日伤害（公会） - BOSS 列
-    boss.forEach(function (b) {
+    Object.keys(boss).forEach(function (b) {
       gh_stat_col.push({
         field: b,
         title: b,
