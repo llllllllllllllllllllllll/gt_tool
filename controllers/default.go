@@ -23,8 +23,8 @@ var (
 	lastUpdate  time.Time
 	lastLogTime int
 	// nNow 当前第N期公会战
-	nNow = "5"
-	sNK  = map[string]string{"5": "五"}
+	nNow = "6"
+	sNK  = map[string]string{"5": "五", "6": "六"}
 )
 
 type MainController struct {
@@ -76,12 +76,14 @@ func (c *MainController) Prepare() {
 		c.Abort("404")
 		return
 	}
+	c.Data["ID"] = c.apiID
 
 	c.sNow = c.GetString("s")
 	if _, ok := sNK[c.sNow]; !ok {
 		c.sNow = nNow
 	}
 	c.Data["sN"] = sNK[c.sNow]
+	c.Data["sn"] = c.sNow
 
 	c.sDs = make(map[string]gt)
 
@@ -215,7 +217,13 @@ func (c *MainController) Get() {
 		return
 	}
 
-	c.Data["Date"] = result.Data.Date
+	if c.sNow == "5" {
+		c.ds.Date = []string{"2021-07-30", "2021-07-31", "2021-08-01", "2021-08-02", "2021-08-03", "2021-08-04", "2021-08-05", "2021-08-06", "2021-08-04", "2021-08-08", "2021-08-09", "2021-08-10", "2021-08-11", "2021-08-12"}
+	} else {
+		c.ds.Date = result.Data.Date
+	}
+
+	c.Data["Date"] = c.ds.Date
 
 	if (lastFetch == time.Time{}) || (time.Now().After(lastFetch.Add(1 * time.Minute))) {
 		isPull = true
@@ -223,8 +231,10 @@ func (c *MainController) Get() {
 
 	if nNow != c.sNow {
 		logs.Info("not fetch")
+		c.Data["isHistory"] = 1
 		return
 	}
+	c.Data["isHistory"] = 0
 	if (!isPull && !force) || offline == "1" {
 		c.Data["lastFetch"] = lastFetch.Format("2006-01-02 15:04:05")
 		c.Data["lastUpdate"] = c.ds.LastLogTime
@@ -298,6 +308,8 @@ func (c *MainController) Get() {
 		c.Abort("500")
 		return
 	}
+
+	os.WriteFile("/tmp/battle.json", str, os.ModePerm)
 
 	err = bm.Put(context.TODO(), c.apiID, str, 0)
 	if err != nil {

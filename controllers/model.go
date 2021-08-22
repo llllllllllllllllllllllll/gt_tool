@@ -3,6 +3,7 @@ package controllers
 // "sort"
 
 type gt struct {
+	Date        []string
 	Data        map[string]report
 	GLogDetail  []gLogDetail
 	GLogIndex   map[int]gLogDetail
