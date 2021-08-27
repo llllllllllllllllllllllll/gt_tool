@@ -1,11 +1,51 @@
+$.extend($.fn.bootstrapTable.defaults, $.fn.bootstrapTable.locales['zh-CN']);
+
 $(document).ready(function () {
     $('#dropdownSubMenu1').next(".dropdown-menu").find("a").on("click", function (e) {
         let url = new URL(location.href);
         url.searchParams.set("s", $(this).data("s"));
         location.href = url;
     });
-});
 
+    if(location.hash) {
+        $('a[href="' + location.hash + '"]').tab('show');
+    }
+    $(document.body).on("click", "a[data-toggle]", function(event) {
+        location.hash = this.getAttribute("href");
+    });
+
+
+
+
+//获取两日期之间日期列表函数
+function getdiffdate(stime, etime) {
+    //初始化日期列表，数组
+    var diffdate = new Array();
+    var i = 0;
+    //开始日期小于等于结束日期,并循环
+    while (stime <= etime) {
+        diffdate[i] = stime;
+
+        //获取开始日期时间戳
+        var stime_ts = new Date(stime).getTime();
+        // console.log('当前日期：'+stime   +'当前时间戳：'+stime_ts);
+
+        //增加一天时间戳后的日期
+        var next_date = stime_ts + (24 * 60 * 60 * 1000);
+
+        //拼接年月日，这里的月份会返回（0-11），所以要+1
+        var next_dates_y = new Date(next_date).getFullYear() + '-';
+        var next_dates_m = (new Date(next_date).getMonth() + 1 < 10) ? '0' + (new Date(next_date).getMonth() + 1) + '-' : (new Date(next_date).getMonth() + 1) + '-';
+        var next_dates_d = (new Date(next_date).getDate() < 10) ? '0' + new Date(next_date).getDate() : new Date(next_date).getDate();
+
+        stime = next_dates_y + next_dates_m + next_dates_d;
+
+        //增加数组key
+        i++;
+    }
+    // console.log(diffdate);
+    return diffdate;
+}
 
 _date = {};
 // 定制表记录
@@ -34,6 +74,65 @@ users.forEach(function (u) {
 });
 
 
+Object.keys(boss).forEach(function (b) {
+    $('#boss_role #sel_boss').append(new Option(b, b));
+});
+
+chart_member_dao_boss_guild_data = [];
+chart_member_dao_boss_options = {
+    xAxis: {
+        type: 'category',
+        data: Object.values(users),
+        splitArea: {
+            show: true
+        },
+        axisTick:{
+            show:false
+        } ,
+        axisLabel:{
+            interval:0,
+            rotate:35,
+            align: 'center',
+        },
+    },
+    yAxis: {
+        type: 'category',
+        data: Object.keys(boss),
+        splitArea: {
+            show: true
+        }
+    },
+    tooltip: {
+        position: 'top'
+    },
+    visualMap: {
+        min: 0,
+        max: 18,
+        calculable: true,
+        orient: 'horizontal',
+        left: 'center',
+        bottom: '15%',
+        show: false,
+        inRange: {
+            color: [ '#ffedad','#ee6868'],
+        }
+    },
+    series: [{
+        name: 'boss出刀数',
+        type: 'heatmap',
+        // data: Array(users.length),
+        label: {
+            show: true
+        },
+        emphasis: {
+            itemStyle: {
+                shadowBlur: 10,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+        }
+    }]
+}
+
 chart_boss_dao_options = {
     title: {
         text: '',
@@ -47,7 +146,7 @@ chart_boss_dao_options = {
         {
             name: '有效刀数',
             type: 'pie',
-            radius: '50%',
+            radius: ['40%', '70%'],
             emphasis: {
                 itemStyle: {
                     shadowBlur: 10,
@@ -75,7 +174,7 @@ chart_boss_avg_damage_options = {
         {
             name: '平均每刀受到的伤害',
             type: 'pie',
-            radius: '50%',
+            radius: ['40%', '70%'],
             emphasis: {
                 itemStyle: {
                     shadowBlur: 10,
@@ -90,14 +189,25 @@ chart_boss_avg_damage_options = {
         }
     ]
 };
+chart_daily_dmg_dateList = getdiffdate(filterDate[filterDate.length - 1], season_settings[season].end);
 chart_daily_dmg_options = {
     tooltip: {
-        trigger: 'axis'
+        trigger: 'axis',
+        // formatter: function(params){
+        //     // params = params.filter(x => x.seriesIndex != 3)
+        //     // console.log(params);
+        //     // params[3] = {};
+        //     // return params;
+        // }
+       
     },
+    // legend: {
+    //     data: ['造成伤害', '公会平均伤害']
+    // },
     xAxis: [
         {
             type: 'category',
-            data: filterDate,
+            data: chart_daily_dmg_dateList,
             axisPointer: {
                 type: 'shadow'
             }
@@ -107,15 +217,31 @@ chart_daily_dmg_options = {
         {
             type: 'value',
             name: '输出',
+            // splitNumber: 10,
             // min: 0,
             // max: 8000000,
         }
     ],
     series: [
-        {
-            name: '造成伤害',
-            type: 'bar',
-        }
+        // {
+        //     name: '造成伤害',
+        //     type: 'bar',
+        //     itemStyle: { color: "#ffd865" },
+        //     label: {
+        //         show: true,
+        //         position: 'insideBottom',
+        //         formatter: function (v) {
+        //             if (v.data >= 100000000) {
+        //                 return (v.data / 100000000).toFixed(1) + "亿";
+        //             } else if (v.data >= 10000) {
+        //                 return (v.data / 10000).toFixed(1) + "万";
+        //             } else {
+        //                 return v.data;
+        //             }
+        //         },
+        //     }
+        // },
+       
     ]
 };
 
@@ -132,34 +258,7 @@ today = _date[filterDate[0]];
 $("#sel_sp").val(filterDate[0]);
 $("#sel_sp").change();
 
-round2Lv = {
-    "1": { "lv": "50", "hp": 1080000 },
-    "2": { "lv": "50", "hp": 1080000 },
-    "3": { "lv": "55", "hp": 1237500 },
-    "4": { "lv": "55", "hp": 1237500 },
-    "5": { "lv": "60", "hp": 1500000 },
-    "6": { "lv": "60", "hp": 1500000 },
-    "7": { "lv": "65", "hp": 2025000 },
-    "8": { "lv": "66", "hp": 2640000 },
-    "9": { "lv": "67", "hp": 3440000 },
-    "10": { "lv": "68", "hp": 4500000 },
-    "11": { "lv": "69", "hp": 5765625 },
-    "12": { "lv": "70", "hp": 7500000 },
-    "13": { "lv": "71", "hp": 9750000 },
-    "14": { "lv": "72", "hp": 12000000 },
-    "15": { "lv": "73", "hp": 16650000 },
-    "16": { "lv": "74", "hp": 24000000 },
-    "17": { "lv": "75", "hp": 35000000 },
-    "18": { "lv": "76", "hp": 50000000 },
-    "19": { "lv": "77", "hp": 72000000 },
-    "20": { "lv": "78", "hp": 100000000 },
-    "21": { "lv": "79", "hp": 140000000 },
-    "22": { "lv": "80", "hp": 200000000 },
-    "23": { "lv": "80", "hp": 200000000 },
-    "24": { "lv": "80", "hp": 200000000 },
-};
-lv = [50, 55, 60, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80];
-gLog = {};
+
 
 $.ajax({
     async: false,
@@ -167,8 +266,70 @@ $.ajax({
     data: queryData,
     success: function (data) {
         gLog = data;
+        // 提供出刀阵容数据
+        Object.values(gLog).forEach(function (g) {
+            let _icon = g.role_list[0].icon;
+            let _leader_act = _icon.substring(_icon.lastIndexOf("/") + 1);
+            let _member_act = g.role_list.slice(1).map(a => a.icon.substring(a.icon.lastIndexOf("/")+1)).sort().join(",");
+            let _team_act = _leader_act + "|" + _member_act;
+            try {
+                if (!boss[g.boss.name].hasOwnProperty("roles")) {
+                    boss[g.boss.name].roles = {};
+                }
+
+                if (!boss[g.boss.name].roles.hasOwnProperty(_team_act)) {
+                    boss[g.boss.name].roles[_team_act] = { 
+                        log: [], 
+                        count: 0 , 
+                        leader: _leader_act , 
+                        member: _member_act.split(","),
+                        total_damage : 0, avg_damage: 0 , max_dmg: 0 , max_tou : 0 , avg_dmg: 0 , avg_tou: 0 ,
+                     };
+                }
+                // 累计伤害
+                boss[g.boss.name].roles[_team_act].total_damage+=g.damage;
+                // 平均伤害
+                // 最高秒伤
+                // 最高韧性
+                let holder = {dps:0,toughness:0};
+
+                g.role_list.forEach(function(role) {
+                    holder.dps += role.dps;
+                    holder.toughness += role.toughness;
+                });
+                if (holder.dps > boss[g.boss.name].roles[_team_act].max_dmg) {
+                    boss[g.boss.name].roles[_team_act].max_dmg=holder.dps;
+                }
+                if (holder.toughness > boss[g.boss.name].roles[_team_act].max_tou) {
+                    boss[g.boss.name].roles[_team_act].max_tou=holder.toughness;
+                }
+                // 平均秒伤
+                // 平均韧性
+                // if (g.damage > boss[g.boss.name].roles[_team_act].max_dmg) {
+                //     boss[g.boss.name].roles[_team_act].max_dmg=g.damage
+                // }
+                
+                
+               
+                boss[g.boss.name].roles[_team_act].count+=1;
+                boss[g.boss.name].roles[_team_act].log.push(g);
+            }
+            catch (e) {
+                console.error(e);
+            }
+           
+        });
+        // 按阵容出场次数倒序
+        Object.values(boss).forEach(function(b){
+            b.roles=Object.values(b.roles).sort(function(a,b){return b.count-a.count});
+            b.roles.forEach(function(val,idx){
+                val.index=idx;
+            })
+        });
     }
 });
+
+
 
 bLog = [];
 mt = [];
@@ -352,11 +513,9 @@ $('#table').bootstrapTable({
                 Dps += '<tr>';
                 Tou += '<tr>';
             }
-            
+
 
             try {
-
-
                 gLog[row.log_time].role_list.forEach(function (v) {
                     if (!v.hasOwnProperty('dps')) {
                         v.dps = 0;
@@ -374,32 +533,32 @@ $('#table').bootstrapTable({
                     } else {
                         roles += '<img class="vimg" src="' + v.icon + '" />';
                     }
-                    
+
                     teamDps += v.dps;
                     teamTou += v.toughness;
                     teamRec += v.recovery;
                     if (_ss == "1") {
-                    Dps += '<td>';
-                    // Dps += '<span class="vspan">';
-                    Dps += v.dps.toLocaleString() 
-                    // Dps += '</span>';
-                    Dps += '</td>';
-                     Tou += '<td>';
-                    //  Tou += '<span  class="vspan">';
-                    Tou +=  v.toughness.toLocaleString() ;
-                    // Tou += '</span>';
-                    Tou += '</td>';
+                        Dps += '<td>';
+                        // Dps += '<span class="vspan">';
+                        Dps += v.dps.toLocaleString()
+                        // Dps += '</span>';
+                        Dps += '</td>';
+                        Tou += '<td>';
+                        //  Tou += '<span  class="vspan">';
+                        Tou += v.toughness.toLocaleString();
+                        // Tou += '</span>';
+                        Tou += '</td>';
                     } else {
-                    // Dps += '<td>';
-                    Dps += '<span class="vspan">';
-                    Dps += v.dps.toLocaleString() 
-                    Dps += '</span>';
-                    // Dps += '</td>';
-                     // Tou += '<td>';
-                     Tou += '<span  class="vspan">';
-                    Tou +=  v.toughness.toLocaleString() ;
-                    Tou += '</span>';
-                    // Tou += '</td>';
+                        // Dps += '<td>';
+                        Dps += '<span class="vspan">';
+                        Dps += v.dps.toLocaleString()
+                        Dps += '</span>';
+                        // Dps += '</td>';
+                        // Tou += '<td>';
+                        Tou += '<span  class="vspan">';
+                        Tou += v.toughness.toLocaleString();
+                        Tou += '</span>';
+                        // Tou += '</td>';
                     }
 
                 });
@@ -423,9 +582,9 @@ $('#table').bootstrapTable({
                 roles += "<br/>队伍秒伤: " + teamDps.toLocaleString();
                 roles += "<br/>队伍韧性: " + teamTou.toLocaleString();
             }
-          
 
-           
+
+
             return roles
         }
     }, {
@@ -541,6 +700,55 @@ function spLogCalc(day) {
 }
 
 
+function createTblBossRoleLogTable() {
+    $('#tbl_boss_role').find("table[data-index]").each(function(idx,obj){
+        // console.log(boss[$('#boss_role #sel_boss').val()].roles[$(obj).parents()[1].rowIndex]);
+        // $(obj).parents[2].rowIndex
+
+        // console.log(obj);
+
+        let data = [];
+        try {
+            data=boss[$('#boss_role #sel_boss').val()].roles[$(obj).data('index')].log;
+        } catch(e) {
+            console.error(e);
+            console.log(boss[$('#boss_role #sel_boss').val()]);
+            console.log($(obj));
+        }
+        
+        $(obj).bootstrapTable({
+            pageSize: 3,
+            pagination:true,
+            paginationParts: ['pageList'],
+            data:data.reverse(),
+            columns: [{
+                field: 'round',
+                title: '轮次',
+                sortable: true,
+            },{
+                field: 'user_name',
+                title: '成员',
+                sortable: true,
+            }, {
+                field: 'damage',
+                title: '造成伤害',
+                align: 'right',
+                sortable: true,
+                formatter: function (value, row) {
+                    return parseInt(value).toLocaleString();
+                },
+                sorter: function (a, b, rowA, rowB) {
+                    return rowA.damage - rowB.damage
+                }
+            },{
+                field: 'boss.level',
+                title: '首领等级',
+                sortable: true,
+            },
+            ]
+        });
+    });
+}
 
 
 function sp() {
@@ -721,15 +929,42 @@ function sp() {
         let who = $(this).val();
         chart_boss_dao_options.series[0].data = [];
         chart_boss_avg_damage_options.series[0].data = [];
+        chart_daily_dmg_options.series=[];
         if (who == "guild") {
+            $($("#chart_member_dao_boss").parents()[3]).show();
+            // chart_member_dao_boss_options.series[0].data=chart_member_dao_boss_guild_data;
+            chart_member_dao_boss_options.series[0].data=chart_member_dao_boss_guild_data.map(function (item) {
+                return [item[0], item[1], item[2] || '-'];
+            });;
             for (const [key, value] of Object.entries(boss)) {
                 chart_boss_dao_options.series[0].data.push({ "value": value.dao, "name": key, itemStyle: { color: boss[key].color } });
                 chart_boss_avg_damage_options.series[0].data.push({
                     "value": (value.total_damage / value.dao).toFixed(0), "name": key, itemStyle: { color: boss[key].color }
                 })
             }
-            chart_daily_dmg_options.series[0].data = Object.values(tongji_gh).map(a => a.total);
+            chart_daily_dmg_options.legend = { data :['造成伤害'] };
+            
+            chart_daily_dmg_options.series.push({
+                name: '造成伤害',
+                type: 'bar',
+                data:  Object.values(tongji_gh).map(a => a.total),
+                itemStyle: { color: "#ffd865" },
+                label: {
+                    show: true,
+                    position: 'insideBottom',
+                    formatter: function (v) {
+                        if (v.data >= 100000000) {
+                            return (v.data / 100000000).toFixed(1) + "亿";
+                        } else if (v.data >= 10000) {
+                            return (v.data / 10000).toFixed(1) + "万";
+                        } else {
+                            return v.data;
+                        }
+                    },
+                }
+            });
         } else {
+            $($("#chart_member_dao_boss").parents()[3]).hide();
             if (uLog.hasOwnProperty(who)) {
                 for (const [key, value] of Object.entries(uLog[who].stat.chu_boss)) {
                     chart_boss_dao_options.series[0].data.push({ "value": value, "name": key, itemStyle: { color: boss[key].color } });
@@ -739,9 +974,124 @@ function sp() {
                         "value": (value / uLog[who].stat.chu_boss[key]).toFixed(0), "name": key, itemStyle: { color: boss[key].color }
                     });
                 }
-                chart_daily_dmg_options.series[0].data = Object.values(uLog[who].stat.dao_dmg).splice(0, filterDate.length);
+                chart_daily_dmg_options.legend = { data : [ '高伤', '次伤', '低伤', '公会平均伤害'] };
+                
+                // chart_daily_dmg_dateList.forEach(function(day){
+                //     if(uLog[who].stat.chart.day_dps.hasOwnProperty(day)) {
+                //         let _d = uLog[who].stat.chart.day_dps[day];
+                //         chart_daily_dmg_options.series.push({
+                //             name: day,
+                //             data: _d,
+                //             type: 'bar',
+                //             itemStyle: { color: "#ffd865" },
+                //             label: {
+                //                 show: true,
+                //                 position: 'insideBottom',
+                //                 formatter: function (v) {
+                //                     if (v >= 100000000) {
+                //                         return (v / 100000000).toFixed(1) + "亿";
+                //                     } else if (v >= 10000) {
+                //                         return (v / 10000).toFixed(1) + "万";
+                //                     } else {
+                //                         return v;
+                //                     }
+                //                 },
+                //             }
+                //         });
+                //     }   
+                // })
+                chart_daily_dmg_options.series.push(...[
+                    {
+                        name: '高伤',
+                        type: 'bar',
+                        stack: '造成伤害',
+                        data: uLog[who].stat.chart.day_dps.high,
+                        label: {
+                            normal:{
+                                show:true,
+                                position: 'insideBottom',
+                                formatter: function(params) {
+                                    let idx=params.dataIndex;
+                                    let total=0;
+                                    total+=uLog[who].stat.chart.day_dps.high[idx];
+                                    total+=uLog[who].stat.chart.day_dps.mid[idx];
+                                    total+=uLog[who].stat.chart.day_dps.low[idx];
+                                    if (isNaN(total)) {
+                                        return "";
+                                    }
+                                    return Math.round(total / 1000) /10 + '万';
+                                }
+                            }
+                        },
+                        itemStyle: {
+                            color: 'rgb(255,190,0)'
+                        }  
+                    },
+                    {
+                        name: '次伤',
+                        type: 'bar',
+                        stack: '造成伤害',
+                        data: uLog[who].stat.chart.day_dps.mid,
+                        itemStyle: {
+                            color: 'rgb(255,213,91)'
+                        }  
+                    },
+                    {
+                        name: '低伤',
+                        type: 'bar',
+                        stack: '造成伤害',
+                        data: uLog[who].stat.chart.day_dps.low,
+                        itemStyle: {
+                            color: 'rgb(255,239,193)'
+                        }  
+                    },
+                    // {
+                    //     name: '总伤',
+                    //     type: 'bar',
+                    //     stack: '造成伤害',
+                    //     data: Array(chart_daily_dmg_dateList.length).fill(0),
+                    //     tooltip: {
+                    //         formatter: function(params) {
+                    //             return ""
+                    //         }
+                    //     },
+                    //     label: {
+                    //         normal:{
+                    //             show:true,
+                    //             position: 'top',
+                    //             formatter: function(params) {
+                    //                 let idx=params.dataIndex;
+                    //                 let total=0;
+                    //                 total+=uLog[who].stat.chart.day_dps.high[idx];
+                    //                 total+=uLog[who].stat.chart.day_dps.mid[idx];
+                    //                 total+=uLog[who].stat.chart.day_dps.low[idx];
+                    //                 if (isNaN(total)) {
+                    //                     return "";
+                    //                 }
+                    //                 return Math.round(total / 1000) /10 + '万';
+                    //             }
+                    //         }
+                    //     }
+                    // },
+                    {
+                        data: Object.values(tongji_gh).map(a => a.avg),
+                        name: '公会平均伤害',
+                        type: 'line',
+                    }]);
             }
         }
+
+        
+
+        document.getElementById('chart_member_dao_boss').style.width = 100 + "vw";
+        document.getElementById('chart_member_dao_boss').style.height = 50 + "vh";
+        chart_member_dao_boss=echarts.init(document.getElementById('chart_member_dao_boss'));
+        chart_member_dao_boss.setOption(chart_member_dao_boss_options, true);
+        chart_member_dao_boss.resize({
+            opts: { width: "auto", height: "auto" }
+        });
+        
+
         document.getElementById('chart_boss_dao').style.width = 50 + "vw";
         document.getElementById('chart_boss_dao').style.height = 50 + "vh";
         chart_boss_dao = echarts.init(document.getElementById('chart_boss_dao'));
@@ -758,8 +1108,6 @@ function sp() {
             opts: { width: "auto", height: "auto" }
         });
 
-
-
         document.getElementById('chart_daily_dmg').style.width = 100 + "vw";
         document.getElementById('chart_daily_dmg').style.height = 50 + "vh";
         chart_daily_dmg = echarts.init(document.getElementById('chart_daily_dmg'));
@@ -770,10 +1118,6 @@ function sp() {
     });
 
 
-    $("#sel_stat_users").val("guild");
-    $("#sel_stat_users").change();
-
-
     window.addEventListener("resize", () => {
         this.chart_boss_dao.resize({
             opts: { width: "auto", height: "auto" }
@@ -781,11 +1125,96 @@ function sp() {
         this.chart_boss_avg_damage.resize({
             opts: { width: "auto", height: "auto" }
         });
+        this.chart_member_dao_boss.resize({
+            opts: { width: "auto", height: "auto" }
+        });
     });
 
+    
+    
 
+    $("#boss_role #sel_boss").change(function () {
+        $('#tbl_boss_role').bootstrapTable('load',boss[$(this).val()].roles);
+        createTblBossRoleLogTable()
+    })
 
-
+    $('#tbl_boss_role').bootstrapTable({
+        onResetView: function(){
+            createTblBossRoleLogTable()
+        },
+        idField: 'index',
+        locale: "zh-CN",
+        toolbar: "#tbl_boss_role_toolbar",
+        data: boss[$('#boss_role #sel_boss').val()].roles,
+        search: false,
+        sortable: true,
+        undefinedText: "0",
+        columns: [{
+            field: 'count',
+            title: '出场次数',
+            sortable: true,
+        },{
+            field: 'leader',
+            title: '队长',
+            sortable: true,
+            formatter: function(value) {
+                return '<img class="vimg" src="https://l1-prod-patch-snake.bilibiligame.net/bigfunAssets/version_1/portraits/' + value + '" />'
+            }
+        },{
+            field: 'member',
+            title: '队员',
+            sortable: true,
+            formatter: function(value) {
+                let s = "";
+                value.forEach(function(v){
+                    s+= '<img class="vimg" src="https://l1-prod-patch-snake.bilibiligame.net/bigfunAssets/version_1/portraits/' + v + '" />'
+                });
+                return s;
+            }
+        },{
+            field: 'total_damage',
+            title: '累计伤害',
+            sortable: true,
+            formatter: function (value, row) {
+                return parseInt(value).toLocaleString();
+            },
+            sorter: function (a, b, rowA, rowB) {
+                return  rowA.total_damage - rowB.total_damage
+            }
+        },{
+            field: 'avg_damage',
+            title: '平均秒伤',
+            sortable: true,
+        },{
+            field: 'max_dmg',
+            title: '最高秒伤',
+            sortable: true,
+        },{
+            field: 'max_tou',
+            title: '最高韧性',
+            sortable: true,
+        },{
+            field: 'avg_dmg',
+            title: '平均伤害',
+            sortable: true,
+        },{
+            field: 'avg_tou',
+            title: '平均韧性',
+            sortable: true,
+        },{
+            field: 'log',
+            title: '战斗记录',
+            sortable: true,
+            cellStyle: function (value, row, index, field) {
+                    return { css: {width: "50%"} }
+            },
+            formatter: function(value,row) {
+                return '<table data-index="'+ row.index +'" id="'+ row.leader + "_" + row.member.join("_") +'"></table>';
+            }
+        },
+        ]
+    });
+    createTblBossRoleLogTable();
 
 
     Object.values(tongji_gh).forEach(function (v) {
@@ -992,7 +1421,51 @@ $.ajax({
             _tongji_row.total = uLog[user].stat.dao_dmg_total;
             _tongji_row.user_name = user;
             tongji.push(_tongji_row);
+
+            // 图表分析 - 出刀图 - 公会，转换战斗记录到笛卡尔坐标
+            let day_mdb = [];
+            Object.keys(boss).forEach(function(name,boss_idx){
+                if (uLog[user].stat.chu_boss.hasOwnProperty(name)) {
+                    day_mdb.push([users.indexOf(user),boss_idx,uLog[user].stat.chu_boss[name]]);
+                } else {
+                    day_mdb.push([users.indexOf(user),boss_idx,0]);
+                }
+            });
+
+            
+
+            // 图表分析 - 输出 - 个人，由大到小排列每天输出
+            let day_dps={};
+            uLog[user].data.forEach(function(log){
+                if (!day_dps.hasOwnProperty(log.log_date)) {
+                    day_dps[log.log_date]=[];
+                }
+                day_dps[log.log_date].push(log.damage);
+            });
+            Object.values(day_dps).forEach(function(day){
+                day.sort(function(a,b){return a-b}).reverse();
+            });
+
+            
+            day_dps.high = [];
+            day_dps.mid = [];
+            day_dps.low = [];
+            
+            chart_daily_dmg_dateList.forEach(function(day){
+                if (day_dps.hasOwnProperty(day)) {
+                    day_dps.high.push(day_dps[day].shift());
+                    day_dps.mid.push(day_dps[day].shift());
+                    day_dps.low.push(day_dps[day].shift());
+                }
+            });
+
+            uLog[user].stat.chart = { 'day_dps': day_dps, 'day_mdb' : day_mdb }
         });
+
+        
+        for (const [key, value] of Object.entries(uLog)) {
+            chart_member_dao_boss_guild_data.push(...value.stat.chart.day_mdb);
+        } 
     }
 });
 
@@ -1036,9 +1509,9 @@ $('#tbl_uLog').bootstrapTable({
     sortName: today.str,
 });
 if (filterDate.length <= 6) {
-    $('#tbl_uLog').parent().parent().toggleClass("col-lg-4");
+    $('#tbl_uLog').parent().parent().toggleClass("col-lg-6");
 } else if (filterDate.length <= 10) {
-    $('#tbl_uLog').parent().parent().toggleClass("col-lg-8");
+    $('#tbl_uLog').parent().parent().toggleClass("col-lg-12");
 }
 
 
@@ -1072,9 +1545,9 @@ $('#tbl_total').bootstrapTable({
     undefinedText: "0",
 });
 if (filterDate.length <= 6) {
-    $('#tbl_total').parent().parent().toggleClass("col-lg-4");
+    $('#tbl_total').parent().parent().toggleClass("col-lg-6");
 } else if (filterDate.length <= 10) {
-    $('#tbl_total').parent().parent().toggleClass("col-lg-8");
+    $('#tbl_total').parent().parent().toggleClass("col-lg-12");
 }
 
 
@@ -1087,3 +1560,12 @@ $('#tbl_total_guild').bootstrapTable({
     undefinedText: "0",
 });
 
+$("#sel_stat_users").val("guild");
+$("#sel_stat_users").change();
+
+});
+
+$(window).on('popstate', function() {
+    var anchor = location.hash || $("a[data-toggle=pill]").first().attr("href");
+    $('a[href="' + anchor + '"]').tab('show');
+});

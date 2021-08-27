@@ -229,6 +229,10 @@
                       aria-controls="vert-tabs-chart" aria-selected="false">图表分析</a>
                   </li>
                   <li class="nav-item">
+                    <a class="nav-link" id="vert-tabs-boss-role" data-toggle="pill" href="#boss_role" role="tab"
+                      aria-controls="vert-tabs-boss-role" aria-selected="false">出刀阵容</a>
+                  </li>
+                  <li class="nav-item">
                     <a class="nav-link" id="vert-tabs-tansuo-tab" data-toggle="pill" href="#tansuo" role="tab"
                       aria-controls="vert-tabs-tansuo" aria-selected="false">探索工坊</a>
                   </li>
@@ -262,6 +266,12 @@
                       aria-labelledby="vert-tabs-total-guild-tab">
                       <table id="tbl_total_guild"></table>
                     </div>
+                    <div class="tab-pane fade" id="boss_role" role="tabpanel" aria-labelledby="vert-tabs-boss_role">
+                      <div id="tbl_boss_role_toolbar">
+                        选择首领：<select id="sel_boss" class="text-md"></select>
+                      </div>
+                        <table id="tbl_boss_role"></table>
+                    </div>
                     <div class="tab-pane fade" id="chart" role="tabpanel" aria-labelledby="vert-tabs-chart">
                       <div class="row">
                         选择成员：<select id="sel_stat_users" class="text-md"></select>
@@ -287,6 +297,20 @@
                             <!-- /.card-header -->
                             <div class="card-body">
                               <div id="chart_boss_avg_damage" style="width: 300px;height:400px;"></div>
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-sm-12 col-24">
+                          <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title">出刀图</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                              <div id="chart_member_dao_boss" style="width: 100%;height:400px;"></div>
                             </div>
                             <!-- /.card-body -->
                           </div>
@@ -334,16 +358,20 @@
   <script src="/static/js/bootstrap-table-locale-all.min.js"></script>
   <script src="/static/js/extensions/bootstrap-table-filter-control.min.js"></script>
   <script src="/static/js/extensions/multiple-select.min.js"></script>
-  <script src="/static/js/settings.js"></script>
+  {{/*
+  <script src="/static/js/settings.js"></script> */}}
 
   <script>
+    $.getScript(location.protocol + "/static/js/settings.js?version=" + (new Date).getTime());
     season = new URL(location.href).searchParams.get("s");
     queryData = { "u": {{.Uid }} , "s": season};
     filterDate = {{.Date }};
     isHistory = {{.isHistory }};
-    shortfilterDate = filterDate.join(',').replaceAll(filterDate[0].substring(0,5),"").split(',');
+    shortfilterDate = filterDate.join(',').replaceAll(filterDate[0].substring(0, 5), "").split(',');
+    $.getScript(location.protocol + "/static/js/main.js?version=" + (new Date).getTime());
   </script>
-  <script src="/static/js/main.js"></script>
+  {{/*
+  <script src="/static/js/main.js"></script> */}}
 </body>
 
 </html>

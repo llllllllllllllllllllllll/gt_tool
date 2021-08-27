@@ -257,6 +257,30 @@ func (c *MainController) Get() {
 		return
 	}
 
+	c.calc()
+
+	c.sDs[c.sNow] = c.ds
+
+	str, err := json.Marshal(c.sDs)
+	if err != nil {
+		logs.Error(err)
+		c.Abort("500")
+		return
+	}
+
+	os.WriteFile("/tmp/battle.json", str, os.ModePerm)
+
+	err = bm.Put(context.TODO(), c.apiID, str, 0)
+	if err != nil {
+		logs.Error(err)
+		c.Abort("500")
+		return
+	}
+
+}
+
+// calc 统计数据
+func (c *MainController) calc() {
 	// if c.ds.GLogIndex == nil {
 	c.ds.GLogIndex = make(map[int]gLogDetail)
 	// }
@@ -299,23 +323,4 @@ func (c *MainController) Get() {
 	}
 
 	c.Data["lastUpdate"] = c.ds.LastLogTime
-
-	c.sDs[c.sNow] = c.ds
-
-	str, err := json.Marshal(c.sDs)
-	if err != nil {
-		logs.Error(err)
-		c.Abort("500")
-		return
-	}
-
-	os.WriteFile("/tmp/battle.json", str, os.ModePerm)
-
-	err = bm.Put(context.TODO(), c.apiID, str, 0)
-	if err != nil {
-		logs.Error(err)
-		c.Abort("500")
-		return
-	}
-
 }
